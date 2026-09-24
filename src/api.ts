@@ -4,6 +4,8 @@ import { Person } from './types/Person';
 const API_URL =
   'https://mate-academy.github.io/react_people-table/api/people.json';
 
+type ApiPerson = Omit<Person, 'slug'> & { slug?: string };
+
 function wait(delay: number) {
   return new Promise(resolve => setTimeout(resolve, delay));
 }
@@ -17,9 +19,7 @@ export function getPeople(): Promise<Person[]> {
         throw new Error('Network response was not ok');
       }
 
-      return response.json() as Promise<
-        Array<Omit<Person, 'slug'> & { slug?: string }>
-      >;
+      return response.json() as Promise<ApiPerson[]>;
     })
     .then(people =>
       people.map(person => ({
