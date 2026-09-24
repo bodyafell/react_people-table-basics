@@ -10,7 +10,21 @@ function wait(delay: number) {
 
 export function getPeople(): Promise<Person[]> {
   // keep this delay for testing purpose
-  return wait(500)
+  return wait(2000)
     .then(() => fetch(API_URL))
-    .then(response => response.json());
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      return response.json() as Promise<
+        Array<Omit<Person, 'slug'> & { slug?: string }>
+      >;
+    })
+    .then(people =>
+      people.map(person => ({
+        ...person,
+        slug: person.slug || person.name.toLowerCase().replace(/\s+/g, '-'),
+      })),
+    );
 }
